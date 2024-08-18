@@ -38,18 +38,30 @@ import {
 
 const formSchema = z.object({
   firstName: z.string().min(1, 'First Name is required'),
-  lastName: z.string(),
+  lastName: z.string().optional(),
   title: z.string().min(1, 'Title/Position is required'),
-  ownershipPercentage: z.number().min(1, 'Ownership % is required'),
+  ownershipPercentage: z
+    .number()
+    .min(1, 'Ownership % is required')
+    .max(100, 'Ownership % cannot exceed 100%'),
   phoneNumber: z.string().min(1, 'Phone Number is required'),
   address: z.string().min(1, 'Address is required'),
   country: z.string().min(1, 'Country is required'),
   state: z.string().min(1, 'State is required'),
   city: z.string().min(1, 'City is required'),
-  zipCode: z.number().min(1, 'Zip Code is required'),
-  ssn: z.string().min(1, 'SSN is required'),
+  zipCode: z
+    .string()
+    .min(1, 'Zip Code is required')
+    .regex(/^\d{5}(-\d{4})?$/, 'Invalid Zip Code format'),
+  ssn: z
+    .string()
+    .min(1, 'SSN is required')
+    .regex(/^\d{3}-\d{2}-\d{4}$/, 'Invalid SSN format'),
   dateOfBirth: z.string().min(1, 'Date of Birth is required'),
-  email: z.string().min(1, 'Email Address is required'),
+  email: z
+    .string()
+    .min(1, 'Email Address is required')
+    .email('Invalid email address'),
 })
 
 export type FormData = z.infer<typeof formSchema>
@@ -67,7 +79,7 @@ export default function OwnershipForm({
   setOwnershipData,
   ownershipData,
 }: FormProps) {
-  const initialValues = {
+  const initialValues: FormData = {
     firstName: '',
     lastName: '',
     title: '',
@@ -77,21 +89,22 @@ export default function OwnershipForm({
     country: '',
     state: '',
     city: '',
-    zipCode: 0,
+    zipCode: '',
     ssn: '',
     dateOfBirth: '',
     email: '',
   }
 
   const [owners, setOwners] = useState<FormData[]>(
-    ownershipData.length > 0 ? ownershipData : [initialValues],
+    ownershipData.length > 0 ? ownershipData : [initialValues as FormData],
   )
+
   const [isSignificantResponsibility, setIsSignificantResponsibility] =
     useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues,
+    defaultValues: initialValues as FormData,
   })
 
   const nextStep = () => setCurrentStep(Math.min(currentStep + 1, 5))
@@ -99,12 +112,12 @@ export default function OwnershipForm({
 
   const addNewOwner = () => {
     if (owners.length < 4) {
-      setOwners([...owners, initialValues])
+      setOwners([...owners, initialValues as FormData])
     }
   }
 
   const resetOwners = () => {
-    setOwners([initialValues])
+    setOwners([initialValues as FormData])
   }
 
   const handleOwnerChange = (

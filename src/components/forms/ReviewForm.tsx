@@ -1,23 +1,9 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { FormData } from '@/components/forms/OwnershipForm'
 
 interface ReviewFormProps {
-  ownershipData: {
-    firstName: string
-    lastName: string
-    title: string
-    ownershipPercentage: number
-    phoneNumber: string
-    address: string
-    country: string
-    state: string
-    city: string
-    zipCode: number
-    ssn: string
-    dateOfBirth: string
-    email: string
-  }[]
+  ownershipData: FormData[]
 }
 
 export default function ReviewForm({ ownershipData }: ReviewFormProps) {
