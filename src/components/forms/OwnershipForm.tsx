@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { LucideCalendarDays } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -14,15 +14,6 @@ import { formatSSN } from '@/components/helpers'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -49,56 +40,59 @@ const formSchema = z.object({
   firstName: z.string().min(1, 'First Name is required'),
   lastName: z.string(),
   title: z.string().min(1, 'Title/Position is required'),
-  ownershipPercentage: z
-    .string()
-    .min(1, 'Ownership % is required')
-    .regex(/^\d+$/, 'Must be a valid percentage'),
+  ownershipPercentage: z.number().min(1, 'Ownership % is required'),
   phoneNumber: z.string().min(1, 'Phone Number is required'),
   address: z.string().min(1, 'Address is required'),
   country: z.string().min(1, 'Country is required'),
   state: z.string().min(1, 'State is required'),
   city: z.string().min(1, 'City is required'),
-  zipCode: z.string().min(1, 'Zip Code is required'),
+  zipCode: z.number().min(1, 'Zip Code is required'),
   ssn: z.string().min(1, 'SSN is required'),
   dateOfBirth: z.string().min(1, 'Date of Birth is required'),
   email: z.string().min(1, 'Email Address is required'),
 })
 
-type FormData = z.infer<typeof formSchema>
+export type FormData = z.infer<typeof formSchema>
 
 interface FormProps {
   currentStep: number
   setCurrentStep: (step: number) => void
+  setOwnershipData: (data: FormData[]) => void
+  ownershipData: FormData[]
 }
 
 export default function OwnershipForm({
   currentStep,
   setCurrentStep,
+  setOwnershipData,
+  ownershipData,
 }: FormProps) {
   const initialValues = {
     firstName: '',
     lastName: '',
     title: '',
-    ownershipPercentage: '',
+    ownershipPercentage: 0,
     phoneNumber: '',
     address: '',
     country: '',
     state: '',
     city: '',
-    zipCode: '',
+    zipCode: 0,
     ssn: '',
     dateOfBirth: '',
     email: '',
   }
 
+  const [owners, setOwners] = useState<FormData[]>(
+    ownershipData.length > 0 ? ownershipData : [initialValues],
+  )
+  const [isSignificantResponsibility, setIsSignificantResponsibility] =
+    useState(false)
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues,
   })
-
-  const [isSignificantResponsibility, setIsSignificantResponsibility] =
-    useState(false)
-  const [owners, setOwners] = useState<FormData[]>([initialValues])
 
   const nextStep = () => setCurrentStep(Math.min(currentStep + 1, 5))
   const prevStep = () => setCurrentStep(Math.max(currentStep - 1, 0))
@@ -128,9 +122,13 @@ export default function OwnershipForm({
 
   const onSubmit = (data: FormData) => {
     console.log(data)
-    resetOwners()
-    // TODO: Submit data to the server or pass as props to next step
+    setOwnershipData(owners)
+    nextStep()
   }
+
+  useEffect(() => {
+    setOwnershipData(owners)
+  }, [owners, setOwnershipData])
 
   return (
     <div>
@@ -169,7 +167,7 @@ export default function OwnershipForm({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form className="space-y-4">
           {owners.map((owner, index) => (
             <div key={index}>
               <hr className="my-6 border-gray-300" />
