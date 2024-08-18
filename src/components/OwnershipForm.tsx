@@ -42,9 +42,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -92,6 +90,59 @@ export default function OwnershipForm() {
 
   const [isSignificantResponsibility, setIsSignificantResponsibility] =
     useState(false)
+  const [owners, setOwners] = useState<FormData[]>([
+    {
+      firstName: '',
+      lastName: '',
+      title: '',
+      ownershipPercentage: '',
+      phoneNumber: '',
+      address: '',
+      country: '',
+      state: '',
+      city: '',
+      zipCode: '',
+      ssn: '',
+      dateOfBirth: '',
+      email: '',
+    },
+  ])
+
+  const addNewOwner = () => {
+    if (owners.length < 4) {
+      setOwners([
+        ...owners,
+        {
+          firstName: '',
+          lastName: '',
+          title: '',
+          ownershipPercentage: '',
+          phoneNumber: '',
+          address: '',
+          country: '',
+          state: '',
+          city: '',
+          zipCode: '',
+          ssn: '',
+          dateOfBirth: '',
+          email: '',
+        },
+      ])
+    }
+  }
+
+  const handleOwnerChange = (
+    index: number,
+    field: keyof FormData,
+    value: string,
+  ) => {
+    const updatedOwners = [...owners]
+    updatedOwners[index] = {
+      ...updatedOwners[index],
+      [field]: value,
+    }
+    setOwners(updatedOwners)
+  }
 
   const onSubmit = (data: FormData) => {
     console.log(data)
@@ -125,7 +176,7 @@ export default function OwnershipForm() {
                 and direct the legal entity (e.g. a Chief Executive Officer,
                 Chief Financial Officer, Managing Member, General Partner,
                 President, Vice President, or Treasurer) or any individual with
-                authority to perform such functions.{' '}
+                authority to perform such functions.
               </p>
               <div className="flex items-center space-x-2 hover:cursor-pointer">
                 <Checkbox
@@ -145,344 +196,434 @@ export default function OwnershipForm() {
             </DialogDescription>
           </DialogHeader>
 
-          <hr className="my-4 border-gray-300" />
-
-          <h2 className="text-lg font-semibold mb-4">
-            {isSignificantResponsibility
-              ? 'CONTROL PRONG (must reside in US)'
-              : 'OWNER 1'}
-          </h2>
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        First Name:<span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="First Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Last Name:
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Last Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Title / Position:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Title / Position" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {!isSignificantResponsibility && (
-                  <FormField
-                    control={form.control}
-                    name="ownershipPercentage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-600">
-                          Ownership %:
-                          <span className="text-red-500 mx-1">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter ownership" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </div>
+              {owners.map((owner, index) => (
+                <div key={index}>
+                  <hr className="my-6 border-gray-300" />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Home / Mobile Phone Number:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <PhoneNumberInput />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Home Address:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Home Address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Country:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={
-                            isSignificantResponsibility
-                              ? 'United States'
-                              : field.value
-                          }
-                          disabled={isSignificantResponsibility}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="United States">
-                              United States
-                            </SelectItem>
-                            <SelectItem value="Australia">Australia</SelectItem>
-                            <SelectItem value="Philippines">
-                              Philippines
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                  <h2 className="text-lg font-semibold mb-4">
+                    {isSignificantResponsibility && index === 0
+                      ? 'CONTROL PRONG (must reside in US)'
+                      : `OWNER ${index + 1}`}
+                  </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="state"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        State:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            First Name:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select State" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Alaska">Alaska</SelectItem>
-                            <SelectItem value="California">
-                              California
-                            </SelectItem>
-                            <SelectItem value="Washington">
-                              Washington
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        City:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select City" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Los Angeles">
-                              Los Angeles
-                            </SelectItem>
-                            <SelectItem value="San Francisco">
-                              San Francisco
-                            </SelectItem>
-                            <SelectItem value="San Diego">San Diego</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="zipCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Zip Code:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Zip Code" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="ssn"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Social Security Number (SSN):
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Social Security Number (SSN)"
-                          {...field}
-                          value={formatSSN(field.value)}
-                          onChange={(e) =>
-                            field.onChange(formatSSN(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Date of Birth:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-full justify-start text-left font-normal',
-                                !field.value && 'text-muted-foreground',
-                              )}
-                            >
-                              <LucideCalendarDays className="w-4 h-4 mr-2" />
-                              {field.value ? (
-                                format(new Date(field.value), 'PPP')
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
+                            <Input
+                              placeholder="First Name"
+                              {...field}
+                              value={owner.firstName}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'firstName',
+                                  e.target.value,
+                                )
                               }
-                              onSelect={(date: { toISOString: () => any }) =>
-                                field.onChange(date?.toISOString() ?? '')
-                              }
-                              initialFocus
                             />
-                          </PopoverContent>
-                        </Popover>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Email Address:
-                        <span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Last Name:
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Last Name"
+                              {...field}
+                              value={owner.lastName}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'lastName',
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Title / Position:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Title / Position"
+                              {...field}
+                              value={owner.title}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'title',
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {!isSignificantResponsibility && index === 0 && (
+                      <FormField
+                        control={form.control}
+                        name="ownershipPercentage"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-600">
+                              Ownership %:
+                              <span className="text-red-500 mx-1">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter ownership"
+                                {...field}
+                                value={owner.ownershipPercentage}
+                                onChange={(e) =>
+                                  handleOwnerChange(
+                                    index,
+                                    'ownershipPercentage',
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
 
-              {!isSignificantResponsibility && (
-                <Button variant="outline" className="mb-4">
-                  Add New Owner
-                </Button>
-              )}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Home / Mobile Phone Number:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <PhoneNumberInput />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Home Address:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Home Address"
+                              {...field}
+                              value={owner.address}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'address',
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Country:<span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={(value) =>
+                                handleOwnerChange(index, 'country', value)
+                              }
+                              defaultValue={
+                                isSignificantResponsibility && index === 0
+                                  ? 'United States'
+                                  : owner.country
+                              }
+                              disabled={
+                                isSignificantResponsibility && index === 0
+                              }
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Country" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="United States">
+                                  United States
+                                </SelectItem>
+                                <SelectItem value="Australia">
+                                  Australia
+                                </SelectItem>
+                                <SelectItem value="Philippines">
+                                  Philippines
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              <DialogFooter>
-                <div className="flex justify-between w-full">
-                  <Button variant="outline">Previous</Button>
-                  <Button type="submit">Next</Button>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            State:<span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={(value) =>
+                                handleOwnerChange(index, 'state', value)
+                              }
+                              defaultValue={owner.state}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select State" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Alaska">Alaska</SelectItem>
+                                <SelectItem value="California">
+                                  California
+                                </SelectItem>
+                                <SelectItem value="Washington">
+                                  Washington
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            City:<span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              onValueChange={(value) =>
+                                handleOwnerChange(index, 'city', value)
+                              }
+                              defaultValue={owner.city}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select City" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Los Angeles">
+                                  Los Angeles
+                                </SelectItem>
+                                <SelectItem value="San Francisco">
+                                  San Francisco
+                                </SelectItem>
+                                <SelectItem value="San Diego">
+                                  San Diego
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Zip Code:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Zip Code"
+                              {...field}
+                              value={owner.zipCode}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'zipCode',
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <FormField
+                      control={form.control}
+                      name="ssn"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Social Security Number (SSN):
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Social Security Number (SSN)"
+                              {...field}
+                              value={formatSSN(owner.ssn)}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'ssn',
+                                  formatSSN(e.target.value),
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dateOfBirth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Date of Birth:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'w-full justify-start text-left font-normal',
+                                    !field.value && 'text-muted-foreground',
+                                  )}
+                                >
+                                  <LucideCalendarDays className="w-4 h-4 mr-2" />
+                                  {field.value ? (
+                                    format(new Date(field.value), 'PPP')
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                  mode="single"
+                                  selected={
+                                    field.value
+                                      ? new Date(field.value)
+                                      : undefined
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-600">
+                            Email Address:
+                            <span className="text-red-500 mx-1">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Email"
+                              {...field}
+                              value={owner.email}
+                              onChange={(e) =>
+                                handleOwnerChange(
+                                  index,
+                                  'email',
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </DialogFooter>
+              ))}
             </form>
           </Form>
+
+          <hr className="my-4 border-gray-300" />
+
+          {owners.length < 4 && !isSignificantResponsibility && (
+            <Button variant="outline" className="mr-auto" onClick={addNewOwner}>
+              Add New Owner
+            </Button>
+          )}
+
+          <DialogFooter>
+            <div className="flex justify-between w-full">
+              <Button variant="outline">Previous</Button>
+              <Button type="submit">Next</Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </main>
