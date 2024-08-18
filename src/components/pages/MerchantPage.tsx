@@ -69,6 +69,7 @@ export default function MerchantPage() {
               {currentStep > 0 && (
                 <Button
                   variant="outline"
+                  className="bg-gray-400 text-white"
                   onClick={() => setCurrentStep(currentStep - 1)}
                 >
                   Previous
@@ -77,6 +78,7 @@ export default function MerchantPage() {
               {currentStep < 5 && (
                 <Button
                   variant="default"
+                  className="bg-[#034591] text-white"
                   onClick={() => setCurrentStep(currentStep + 1)}
                 >
                   Next

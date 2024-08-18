@@ -557,7 +557,11 @@ export default function OwnershipForm({
       <hr className="my-4 border-gray-300" />
 
       {owners.length < 4 && !isSignificantResponsibility && (
-        <Button variant="outline" className="mr-auto" onClick={addNewOwner}>
+        <Button
+          variant="default"
+          className="mr-auto bg-[#81a2c8] text-white"
+          onClick={addNewOwner}
+        >
           Add New Owner
         </Button>
       )}
