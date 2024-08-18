@@ -514,6 +514,17 @@ export default function OwnershipForm({
                               selected={
                                 field.value ? new Date(field.value) : undefined
                               }
+                              onSelect={(date) => {
+                                const selectedDate = date
+                                  ? date.toISOString()
+                                  : ''
+                                handleOwnerChange(
+                                  index,
+                                  'dateOfBirth',
+                                  selectedDate,
+                                )
+                                field.onChange(selectedDate) // Update the form state
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
@@ -523,6 +534,7 @@ export default function OwnershipForm({
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="email"
