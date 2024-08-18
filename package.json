@@ -1,5 +1,9 @@
 {
   "name": "ui-modal-forms",
+  "author": {
+    "name": "Mark Christian Tan",
+    "email": "markcmtan@gmail.com"
+  },
   "version": "0.1.0",
   "private": true,
   "scripts": {
