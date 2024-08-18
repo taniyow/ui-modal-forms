@@ -69,66 +69,39 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 export default function OwnershipForm() {
+  const initialValues = {
+    firstName: '',
+    lastName: '',
+    title: '',
+    ownershipPercentage: '',
+    phoneNumber: '',
+    address: '',
+    country: '',
+    state: '',
+    city: '',
+    zipCode: '',
+    ssn: '',
+    dateOfBirth: '',
+    email: '',
+  }
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      title: '',
-      ownershipPercentage: '',
-      phoneNumber: '',
-      address: '',
-      country: '',
-      state: '',
-      city: '',
-      zipCode: '',
-      ssn: '',
-      dateOfBirth: '',
-      email: '',
-    },
+    defaultValues: initialValues,
   })
 
   const [isSignificantResponsibility, setIsSignificantResponsibility] =
     useState(false)
-  const [owners, setOwners] = useState<FormData[]>([
-    {
-      firstName: '',
-      lastName: '',
-      title: '',
-      ownershipPercentage: '',
-      phoneNumber: '',
-      address: '',
-      country: '',
-      state: '',
-      city: '',
-      zipCode: '',
-      ssn: '',
-      dateOfBirth: '',
-      email: '',
-    },
-  ])
+  const [owners, setOwners] = useState<FormData[]>([initialValues])
 
   const addNewOwner = () => {
     if (owners.length < 4) {
-      setOwners([
-        ...owners,
-        {
-          firstName: '',
-          lastName: '',
-          title: '',
-          ownershipPercentage: '',
-          phoneNumber: '',
-          address: '',
-          country: '',
-          state: '',
-          city: '',
-          zipCode: '',
-          ssn: '',
-          dateOfBirth: '',
-          email: '',
-        },
-      ])
+      setOwners([...owners, initialValues])
     }
+  }
+
+  const resetOwners = () => {
+    setOwners([initialValues])
   }
 
   const handleOwnerChange = (
@@ -146,6 +119,8 @@ export default function OwnershipForm() {
 
   const onSubmit = (data: FormData) => {
     console.log(data)
+    resetOwners()
+    // TODO: Submit data to the server or pass as props to next step
   }
 
   return (
@@ -185,6 +160,11 @@ export default function OwnershipForm() {
                   onCheckedChange={(checked) =>
                     setIsSignificantResponsibility(checked === true)
                   }
+                  onClick={() => {
+                    if (owners.length > 1) {
+                      resetOwners()
+                    }
+                  }}
                 />
                 <label
                   htmlFor="significantResponsibility"
