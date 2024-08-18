@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { LucideCalendarDays } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -89,6 +90,9 @@ export default function OwnershipForm() {
     },
   })
 
+  const [isSignificantResponsibility, setIsSignificantResponsibility] =
+    useState(false)
+
   const onSubmit = (data: FormData) => {
     console.log(data)
   }
@@ -124,7 +128,13 @@ export default function OwnershipForm() {
                 authority to perform such functions.{' '}
               </p>
               <div className="flex items-center space-x-2 hover:cursor-pointer">
-                <Checkbox id="significantResponsibility" />
+                <Checkbox
+                  id="significantResponsibility"
+                  checked={isSignificantResponsibility}
+                  onCheckedChange={(checked) =>
+                    setIsSignificantResponsibility(checked === true)
+                  }
+                />
                 <label
                   htmlFor="significantResponsibility"
                   className="text-base text-gray-800 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -134,8 +144,14 @@ export default function OwnershipForm() {
               </div>
             </DialogDescription>
           </DialogHeader>
+
           <hr className="my-4 border-gray-300" />
-          <h2 className="text-lg font-semibold mb-4">OWNER 1</h2>
+
+          <h2 className="text-lg font-semibold mb-4">
+            {isSignificantResponsibility
+              ? 'CONTROL PRONG (must reside in US)'
+              : 'OWNER 1'}
+          </h2>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -186,21 +202,24 @@ export default function OwnershipForm() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="ownershipPercentage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-600">
-                        Ownership %:<span className="text-red-500 mx-1">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter ownership" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!isSignificantResponsibility && (
+                  <FormField
+                    control={form.control}
+                    name="ownershipPercentage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-600">
+                          Ownership %:
+                          <span className="text-red-500 mx-1">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter ownership" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -248,7 +267,12 @@ export default function OwnershipForm() {
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={
+                            isSignificantResponsibility
+                              ? 'United States'
+                              : field.value
+                          }
+                          disabled={isSignificantResponsibility}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -445,9 +469,11 @@ export default function OwnershipForm() {
                 />
               </div>
 
-              <Button variant="outline" className="mb-4">
-                Add New Owner
-              </Button>
+              {!isSignificantResponsibility && (
+                <Button variant="outline" className="mb-4">
+                  Add New Owner
+                </Button>
+              )}
 
               <DialogFooter>
                 <div className="flex justify-between w-full">
